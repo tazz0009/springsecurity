@@ -15,6 +15,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 				// RequestMatcher 구현(예: URL 패턴을 통해)을 사용하여
 				// HttpServletRequest를 기반으로 액세스를 제한할 수 있습니다.
 				.authorizeHttpRequests()
+				// 패턴 등록
+				.antMatchers("/", "index", "/css/*", "/js/*").permitAll()
 				// 모든 요청을 매핑합니다.
 				.anyRequest()
 				// 인증된 모든 사용자가 URL을 허용하도록 지정합니다.

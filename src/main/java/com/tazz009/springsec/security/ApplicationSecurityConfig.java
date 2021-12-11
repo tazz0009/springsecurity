@@ -16,6 +16,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import static com.tazz009.springsec.security.ApplicationUserRole.*;
+
+import java.util.concurrent.TimeUnit;
+
 import static com.tazz009.springsec.security.ApplicationUserPermission.*;
 
 @Configuration
@@ -39,7 +42,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 //				.and()
 				// RequestMatcher 구현(예: URL 패턴을 통해)을 사용하여
 				// HttpServletRequest를 기반으로 액세스를 제한할 수 있습니다.
-				.authorizeHttpRequests()
+				.authorizeRequests()
 				// 패턴 등록
 				.antMatchers("/", "index", "/css/*", "/js/*").permitAll()
 				.antMatchers("/api/**").hasRole(STUDENT.name())
@@ -55,7 +58,13 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 				// HttpSecurityBuilder를 반환합니다.
 				.and()
 				// HTTP 기본 인증을 구성합니다.
-				.httpBasic();
+				//.httpBasic();
+				.formLogin()
+				.loginPage("/login").permitAll()
+				.defaultSuccessUrl("/courses", true)
+				.and()
+				// default 2 weeks
+				.rememberMe().tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21)).key("somethingverysecured");
 	}
 
 	@Override

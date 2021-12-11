@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,26 +28,31 @@ public class StudentManagementController {
 	private StudentService studentService; 
 
 	@GetMapping
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
 	public List<Student> getAllStudents() {
 		return studentService.findAll();
 	}
 
 	@GetMapping(path = "{id}")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
 	public Optional<Student> getStudent(@PathVariable("id") Long id) {
 		return studentService.findById(id);
 	}
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('student:write')")
 	public void registerNewStudent(@RequestBody Student student) {
 		log.info("registerNewStudent {}", student);
 	}
 
 	@DeleteMapping(path = "{id}")
+	@PreAuthorize("hasAuthority('student:write')")
 	public void deleteStudent(@PathVariable("id") Long id) {
 		log.info("deleteStudent {}", id);
 	}
 
 	@PutMapping(path = "{id}")
+	@PreAuthorize("hasAuthority('student:write')")
 	public void updateStudent(@PathVariable("id") Long id, @RequestBody Student student) {
 		log.info("updateStudent {}, {}", id, student);
 	}

@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import com.tazz009.springsec.service.UserService;
 
 import static com.tazz009.springsec.security.ApplicationUserRole.*;
 
@@ -28,10 +33,18 @@ import static com.tazz009.springsec.security.ApplicationUserPermission.*;
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private final PasswordEncoder passwordEncoder;
+	private final UserService userService;
 
 	@Autowired
-	public ApplicationSecurityConfig(PasswordEncoder passwordEncoder) {
+	public ApplicationSecurityConfig(PasswordEncoder passwordEncoder, UserService userService) {
+		super();
 		this.passwordEncoder = passwordEncoder;
+		this.userService = userService;
+	}
+	
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
 	}
 	
 	@Override
@@ -80,28 +93,23 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 					.logoutSuccessUrl("/login");
 	}
 
-	@Override
+//	@Bean
+//	public DaoAuthenticationProvider daoAuthenticationProvider() {
+//		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//		provider.setPasswordEncoder(passwordEncoder);
+//		provider.setUserDetailsService(userService);
+//		return provider;
+//	}
+	
+//	@Override
+//	protected UserDetailsService userDetailsService() {
+//		return userService;
+//	}
+	
 	@Bean
-	protected UserDetailsService userDetailsService() {
-		UserDetails stu01 = User.builder()
-				.username("tazz001")
-				.password(passwordEncoder.encode("1234qwer"))
-//				.roles(STUDENT.name()) // ROLE_STUDENT
-				.authorities(STUDENT.getGranAuthorities())
-				.build();
-		UserDetails admin01 = User.builder()
-				.username("admin01")
-				.password(passwordEncoder.encode("1234qwer"))
-//				.roles(ADMIN.name()) // ROLE_ADMIN
-				.authorities(ADMIN.getGranAuthorities())
-				.build();
-		UserDetails admin02 = User.builder()
-				.username("admin02")
-				.password(passwordEncoder.encode("1234qwer"))
-//				.roles(ADMINTRAINEE.name()) // ROLE_ADMINTRAINEE
-				.authorities(ADMINTRAINEE.getGranAuthorities())
-				.build();
-		return new InMemoryUserDetailsManager(stu01, admin01, admin02);
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
 	}
-
+	
 }

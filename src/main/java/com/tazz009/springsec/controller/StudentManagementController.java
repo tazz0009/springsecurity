@@ -40,19 +40,19 @@ public class StudentManagementController {
 	}
 	
 	@PostMapping
-	@PreAuthorize("hasAuthority('student:write')")
+	@PreAuthorize("hasAuthority('STUDENT_WRITE')")
 	public void registerNewStudent(@RequestBody Student student) {
 		log.info("registerNewStudent {}", student);
 	}
 
 	@DeleteMapping(path = "{id}")
-	@PreAuthorize("hasAuthority('student:write')")
+	@PreAuthorize("hasAuthority('STUDENT_WRITE')")
 	public void deleteStudent(@PathVariable("id") Long id) {
 		log.info("deleteStudent {}", id);
 	}
 
 	@PutMapping(path = "{id}")
-	@PreAuthorize("hasAuthority('student:write')")
+	@PreAuthorize("hasAuthority('STUDENT_WRITE')")
 	public void updateStudent(@PathVariable("id") Long id, @RequestBody Student student) {
 		log.info("updateStudent {}, {}", id, student);
 	}
